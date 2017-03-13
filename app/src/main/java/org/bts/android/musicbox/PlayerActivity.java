@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,15 +15,15 @@ import android.widget.SeekBar;
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = PlayerActivity.class.getSimpleName();
-    private MediaPlayer mediaPlayer;
     private PlayService playService;
     private boolean mIsBound;
 
-       
+
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder serviceInfo) {
-            playService = new PlayService(serviceInfo);
+            PlayService.LocalBinder binder = (PlayService.LocalBinder) serviceInfo;
+            playService = binder.getService();
             mIsBound = true;
         }
 
@@ -49,9 +48,14 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         btnStop.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
-
-        mediaPlayer = MediaPlayer.create(this, R.raw.bensoundbrazilsamba);
         seekBar.setClickable(false);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent PlayServiceIntent = new Intent(this, PlayService.class);
+        bindService(PlayServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -65,15 +69,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         switch(whichView.getId()) {
             case R.id.play_btn:
-                Intent PlayServiceIntent = new Intent(this, PlayService.class);
-                //startService(PlayServiceIntent);
-                bindService(PlayServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+                this.playService.getMediaPlayer().start();
                 Log.i(PlayerActivity.TAG, "Play");
                 break;
 
             case R.id.stop_btn:
-                mediaPlayer.stop();
-                mediaPlayer.prepareAsync();
+                this.playService.getMediaPlayer().stop();
+                this.playService.getMediaPlayer().prepareAsync();
                 Log.i(PlayerActivity.TAG, "Stop");
                 break;
 
