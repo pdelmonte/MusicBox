@@ -17,6 +17,8 @@ public class PlayService extends Service {
     private IBinder mBinder = new LocalBinder();
     private MediaPlayer mediaPlayer;
 
+    public String SongList[] = {"bensoundbrazilsamba.mp3", "bensoundcountryboy.mp3", "bensoundindia.mp3", "bensoundlittleplanet.mp3", "bensoundpsychedelic.mp3", "bensoundrelaxing.mp3", "bensoundtheelevatorbossanova.mp3" };
+
     public class LocalBinder extends Binder{
         PlayService getService(){ return PlayService.this;}
     }
@@ -34,7 +36,7 @@ public class PlayService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(PlayService.TAG, "On Create");
-        this.mediaPlayer = MediaPlayer.create(this, R.raw.bensoundpsychedelic);
+        this.mediaPlayer = MediaPlayer.create(this, R.raw.bensoundrelaxing);
     }
 
     public MediaPlayer getMediaPlayer() {
