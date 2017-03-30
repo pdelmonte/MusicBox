@@ -6,22 +6,23 @@ package org.bts.android.musicbox;
 
 public class Item {
 
-    private String mImagePath;
+    private String mPath;
     private String mTitle;
+    private int mTrackId;
 
 
-    public Item(String mImagePath, String mTitle) {
-        this.mImagePath = mImagePath;
+    public Item(String mPath, String mTitle, int mTrackid) {
+        this.mPath = mPath;
         this.mTitle = mTitle;
-
+        this.mTrackId = mTrackid;
     }
 
-    public String getImagePath() {
-        return mImagePath;
+    public String getPath() {
+        return mPath;
     }
 
-    public void setImagePath(String ImagePath) {
-        this.mImagePath = ImagePath;
+    public void setPath(String ImagePath) {
+        this.mPath = ImagePath;
     }
 
     public String getTitle() {
@@ -32,11 +33,18 @@ public class Item {
         this.mTitle = Title;
     }
 
+    public int getmTrackId() {
+        return mTrackId;
+    }
+
+    public void setmTrackId(int mTrackId) {
+        this.mTrackId = mTrackId;
+    }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Item{");
-        sb.append("mImagePath='").append(mImagePath).append('\'');
+        sb.append("mImagePath='").append(mPath).append('\'');
         sb.append(", mTitle='").append(mTitle).append('\'');
         sb.append(", mBody='");
         sb.append('}');

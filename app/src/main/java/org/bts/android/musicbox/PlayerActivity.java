@@ -11,18 +11,30 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class PlayerActivity extends AppCompatActivity implements View.OnClickListener{
+public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private static final String TAG = PlayerActivity.class.getSimpleName();
     private PlayService playService;
     private boolean mIsBound;
-    List<Item> listItem = new ArrayList<Item>();
+    private static ArrayList<Item> listItem = new ArrayList<Item>();
+    public ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
+
+
+
+    public static List<Item> getListItem() {
+        return listItem;
+    }
+
 
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -49,7 +61,6 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         final Button btnNext = (Button) findViewById(R.id.next_btn);
         final Button btnPrev = (Button) findViewById(R.id.prev_btn);
         final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
-        final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.song_list_view);
 
         btnStart.setOnClickListener(this);
         btnStop.setOnClickListener(this);
@@ -58,14 +69,44 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         seekBar.setClickable(false);
 
 
-        //for (int idx = 0; idx < listItem.size(); idx++) {
-        //    listItem.add(new Item("", "");
-        //}
+        int[] rawValues = {
+                R.raw.bensoundbrazilsamba,
+                R.raw.bensoundcountryboy,
+                R.raw.bensoundindia,
+                R.raw.bensoundlittleplanet,
+                R.raw.bensoundpsychedelic,
+                R.raw.bensoundrelaxing,
+                R.raw.bensoundtheelevatorbossanova
+        };
 
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setAdapter(new MyListAdapterRecycler(this, (ArrayList<Item>) listItem));
+        for (int idx = 0; idx < rawValues.length; idx++) {
+            listItem.add(new Item("", "Title" ,rawValues[idx]));
+        }
+
+        final ListView mListView = (ListView) this.findViewById(R.id.song_list_view);
+        mListView.setAdapter(new MyListAdapter(this, 0, listItem));
+        mListView.setOnItemClickListener(this);
+
+        ArrayList<HashMap<String, String>> songsListData = new ArrayList<HashMap<String, String>>();
+
+        //new attempt starts here
+        SongsManager songManager = new SongsManager();
+        // get all songs from sdcard
+        this.songsList = songManager.getPlayList();
+
+        // looping through playlist
+        for (int i = 0; i < songsList.size(); i++) {
+            // creating new HashMap
+            HashMap<String, String> song = songsList.get(i);
+            // adding HashList to ArrayList
+            songsListData.add(song);
+            Log.i(PlayerActivity.TAG, ""+ songsListData.get(i));
+        }
+
+
     }
+
+
 
     @Override
     protected void onStart() {
@@ -96,11 +137,19 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.stop_btn:
                 this.playService.getMediaPlayer().stop();
-                this.playService.getMediaPlayer().prepareAsync();
                 Log.i(PlayerActivity.TAG, "Stop");
                 break;
 
             case R.id.next_btn:
+                this.playService.getMediaPlayer().stop();
+                Log.i(PlayerActivity.TAG, "Index: "+playService.getMusicIndex());
+                this.playService.getMediaPlayer().prepareAsync();
+                int i = this.playService.getMusicIndex();
+                this.playService.setMusicIndex(i+1);
+                Log.i(PlayerActivity.TAG, "Index: "+playService.getMusicIndex());
+                //this.playService.getMediaPlayer().selectTrack(playService.getMusicIndex());
+                //this.playService.getMediaPlayer().create(playService, playService.getPlaylist().get(playService.getMusicIndex()));
+                this.playService.getMediaPlayer().start();
                 Log.i(PlayerActivity.TAG, "Next");
                 break;
 
@@ -116,7 +165,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onDestroy() {
-
+        listItem.clear();
         super.onDestroy();
 
         if(isFinishing()) {
@@ -125,5 +174,23 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         }
 
+    }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(this, "Element " + position + ", with ID = " + id,Toast.LENGTH_SHORT).show();
+        if (playService.getMediaPlayer().isPlaying()){
+//            playService.getMediaPlayer().stop();
+//            playService.getMediaPlayer().prepareAsync();
+            this.playService.getMediaPlayer().reset();
+            this.playService.getMediaPlayer().create(this, listItem.get(position).getmTrackId()).start();
+//            this.playService.getMediaPlayer().setDataSource(listItem.get(position).getPath());
+        } else {
+            this.playService.getMediaPlayer().create(this, listItem.get(position).getmTrackId()).start();
+//            this.playService.getMediaPlayer().reset();
+//            this.playService.setMusicIndex(position);
+            this.playService.getMediaPlayer().start();
+        }
     }
 }
