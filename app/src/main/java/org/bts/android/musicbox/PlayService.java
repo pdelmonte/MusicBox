@@ -1,5 +1,7 @@
 package org.bts.android.musicbox;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -7,6 +9,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.io.IOException;
@@ -24,7 +27,6 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
     private static final String TAG = PlayService.class.getSimpleName();
     private IBinder mBinder = new LocalBinder();
     private MediaPlayer mediaPlayer;
-    Timer timer;
     ArrayList<Integer> playlist;
     public int musicIndex = 0;
 
@@ -60,7 +62,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
 
         this.mediaPlayer = new MediaPlayer();
         this.mediaPlayer.setOnPreparedListener(this);
-        timer = new Timer();
+
     }
 
     public MediaPlayer getMediaPlayer() {
@@ -98,6 +100,7 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         Log.d(PlayService.TAG, "In-onPrepared");
 
         this.mediaPlayer.start();
+        triggerRegularNotification();
 
     }
 
@@ -189,4 +192,21 @@ public class PlayService extends Service implements MediaPlayer.OnPreparedListen
         }
     }
 
+
+    private void triggerRegularNotification() {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Now Playing in MusicBox: " + this.getResources().getResourceEntryName(playlist.get(musicIndex)))
+                .setContentText("Click the notification to get more information!")
+                .setAutoCancel(false);
+
+        Intent notificationIntent = new Intent(this, SongDetailActivity.class);
+        notificationIntent.putExtra("Index", musicIndex);
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, 1 ,notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        mBuilder.setContentIntent(mPendingIntent);
+
+        NotificationManager mNotifManager = (NotificationManager) this.getSystemService(Service.NOTIFICATION_SERVICE);
+        mNotifManager.notify(2, mBuilder.build());
+    }
 }

@@ -6,4 +6,6 @@
     <string name="pause">||</string>
     <string name="start_btn">Launch Media Player</string>
     <string name="tv_title_row_text">music_name</string>
+    <string name="custom_notify_text_1">teste1</string>
+    <string name="notification_long_text">Lorem ipsum do caralho a quatro!</string>
 </resources>

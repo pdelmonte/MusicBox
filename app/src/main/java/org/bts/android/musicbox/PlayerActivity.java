@@ -12,12 +12,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.Toast;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
@@ -60,13 +56,13 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         final Button btnStop = (Button) findViewById(R.id.stop_btn);
         final Button btnNext = (Button) findViewById(R.id.next_btn);
         final Button btnPrev = (Button) findViewById(R.id.prev_btn);
-        final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
+
 
         btnStart.setOnClickListener(this);
         btnStop.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
-        seekBar.setClickable(false);
+
 
         //Creating an Array with music files inside the Raw Folder
 
@@ -83,7 +79,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         //Looping the array created above to create an ArrayList to populate the ListView object in the activity
 
         for (int idx = 0; idx < rawValues.length; idx++) {
-            listItem.add(new Item("", "Title" ,rawValues[idx]));
+            listItem.add(new Item("", this.getResources().getResourceEntryName(rawValues[idx]) ,rawValues[idx]));
         }
 
         final ListView mListView = (ListView) this.findViewById(R.id.song_list_view);

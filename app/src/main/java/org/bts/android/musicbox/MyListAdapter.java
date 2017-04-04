@@ -34,7 +34,7 @@ public class MyListAdapter extends ArrayAdapter<Item> {
         View rowView = mInflater.inflate(R.layout.list_view_row_layout, null);
 
         TextView rowBodyTv = (TextView) rowView.findViewById(R.id.tv_title_row_layout);
-        rowBodyTv.setText(PlayerActivity.getListItem().get(position).getTitle() + position);
+        rowBodyTv.setText(PlayerActivity.getListItem().get(position).getTitle());
 
         return rowView;
     }

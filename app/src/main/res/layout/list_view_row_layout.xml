@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tv_title_row_text"
-            android:textSize="30sp"
+            android:textSize="24sp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/tv_row_title_margin"
             android:textColor="@android:color/black"/>
