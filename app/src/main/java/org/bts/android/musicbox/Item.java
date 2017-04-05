@@ -43,11 +43,7 @@ public class Item {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Item{");
-        sb.append("mImagePath='").append(mPath).append('\'');
-        sb.append(", mTitle='").append(mTitle).append('\'');
-        sb.append(", mBody='");
-        sb.append('}');
+        final StringBuilder sb = new StringBuilder("Current Song Playing: ").append(mTitle);
 
         return sb.toString();
     }
